@@ -35,13 +35,13 @@ Par exemple, les 100 premières interactions protéine-protéine humaines dispon
 ##### Quelles sont les significations des champs suivants du format MITAB 2.X?
 
 Numero de champ | Signification Biologique|
- --- | --- 
-1 | 
-2 |
-3 |
-4 |
-5 |
-6 |
+ --- | ---
+1 | Unique identifier for interactor A
+2 | Unique identifier for interactor B
+3 | Alternative identifier for interactor A
+4 | Alternative identifier for interactor B
+5 | Aliases for A
+6 | Aliases for B
 
 ##### Utiliser le PMID de la publication pour récuperer les lignes MITAB des interactions rapportées dans l'étude.
 Une librairie pratique pour manipuler des requêtes HTTP est [requests](https://requests.readthedocs.io/en/master/), eg:
@@ -83,8 +83,8 @@ def mitabReader(httpText):
             yield [ _[0].replace("uniprotkb:", ""),\
                     _[1].replace("uniprotkb:", "") ]\
                   + _[2:]
-                
-            
+
+
 def isMitab_EBV_EBV(mitabArray):
     reEBV   = "taxid:(1037[6-7]|82830)"
     if re.search(reEBV, mitabArray[9]) and re.search(reEBV, mitabArray[10]):
@@ -105,7 +105,7 @@ for mitabArray in mitabReader(ans):
         EBV_EBV_mitab.append(mitabArray)
     elif isMitab_Human_EBV(mitabArray):
         EBV_Human_mitab.append(mitabArray)
-    else : 
+    else :
         raise ValueError("Je ne connais pas cette espece ==> ", mitabArray[9:11])
 
 print(f"Nombre total d'interactions {total}, EBV-EBV {len(EBV_EBV_mitab)}")
@@ -113,18 +113,20 @@ print(f"Nombre total d'interactions {total}, EBV-EBV {len(EBV_EBV_mitab)}")
 
 ##### Que fait la fonction `mitabReader` ?
 ```
+mitabReader est un parser permettant de transformer le texte récuperé avec la requete http en liste utilisable pour le reste du TP.
 ```
 
 ##### Après avoir réparé ce code veuillez
 - Extraire les lignes MITAB impliquant uniquement des protéines d'EBV, quel est leur nombre ?
 - Extraire les lignes MITAB impliquant des protéines humaines et des protéines d'EBV, quel est leur nombre ?
 ```
+Il y a 59 lignes MITAB impliquant uniquement des protéines d'EBV et 171 impliquant des protéines humaines et des protéines d'EBV.
 ```
 
 ##### Combien de protéines humaines et virales sont respectivement dans les jeux d'interactions EBV-Human et EBV-EBV ?
 
 ```
-
+Il y a 64 protéines virales et 113 protéines humaines.
 ```
 
 ###### Pour la suite du travail assurez-vous d'avoir les deux jeux de données MITAB suivants
@@ -143,7 +145,7 @@ A l'aide des données MITAB et de la librarie [networkx](https://networkx.github
 
 - les arêtes relient deux protéines en interaction
 
-![Graphique](ebv_ebv_network_uniprot.png)
+![Graphique](humain_ebv_network_uniprot.png)
 
 ##### Décrivez brièvement ce réseau
 
@@ -234,7 +236,7 @@ root = tree.getroot()
 EBV_node_label = geneNameDictFromMitab(EBV_EBV_mitab, root)
 ```
 
-Il est malheureusement cassant comme le démontre l'exemple 
+Il est malheureusement cassant comme le démontre l'exemple
 
 ```python
 tree = parse('./data/Calderwood_Human_proteome.xml')
@@ -256,7 +258,7 @@ G = nx.Graph()
 
 for data in [("x", "y"), ("j", "k"), ("y","j"), ("k","y")]:
     G.add_edge(data[0], data[1])
-    
+
 name_map = {
     "x" : "Tintin", "y" : "Milou",
     "j" : "Tryphon", "k" : "Haddock"
